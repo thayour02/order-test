@@ -47,6 +47,9 @@ jobs:
         migrate -version
         
     - name: Run migrations
-      run: migrate -path db/migration -database "postgresql://root:secret@localhost:5432/order?sslmode=disable" -verbose up
+      env:
+        DB_SOURCE: postgresql://root:secret@localhost:5432/order?sslmode=disable
+      run: migrate -path db/migration -database "$DB_SOURCE" -verbose up
+
     - name: Test
       run: go test -v ./...

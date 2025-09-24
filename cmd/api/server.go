@@ -44,6 +44,7 @@ for _, ri := range router.Routes() {
 
 	return server
 	
+	
 }
 
 func (server *Server) Start(address string) error {
