@@ -2,7 +2,7 @@ package api
 
 import (
 	"context"
-	"database/sql"
+	// "database/sql"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -16,11 +16,11 @@ import (
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 )
-type loginRequest struct {
-	ExternalID sql.NullInt64 `json:"external_id"`
-	Name       string        `json:"name"`
-	Email      string        `json:"email"`
-}
+// type loginRequest struct {
+// 	ExternalID sql.NullInt64 `json:"external_id"`
+// 	Name       string        `json:"name"`
+// 	Email      string        `json:"email"`
+// }
 
 // OAuth config for browser login (only used for "login via browser" testing).
 func oauthConfig() *oauth2.Config {
@@ -36,13 +36,13 @@ func oauthConfig() *oauth2.Config {
 
 func (server *Server) loginUser(ctx *gin.Context){
 conf := oauthConfig()
-	state := "state" // production: random/csrf
+	state := "state" 
 	url := conf.AuthCodeURL(state, oauth2.AccessTypeOffline)
 	ctx.Redirect(http.StatusFound, url)
 }
 
 
-func CallbackHandler(c *gin.Context) {
+func (server *Server) CallbackHandler(c *gin.Context) {
 	conf := oauthConfig()
 	code := c.Query("code")
 	if code == "" {

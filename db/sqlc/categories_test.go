@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"testing"
 
 	"github.com/sava/utils"
@@ -46,23 +47,19 @@ func TestCreateCategory(t *testing.T) {
 }
 
 func TestAvgPriceForCategory(t *testing.T) {
-	// 1️⃣ Create root category
 	root := createTestCategory(t, sql.NullInt64{Valid: false})
 
-	// 2️⃣ Create product
 	prod := createRandomProduct(t) 
 
-	// 3️⃣ Link product to category
 	_, err := testQueries.db.ExecContext(context.Background(),
 		`INSERT INTO product_categories (product_id, category_id) VALUES ($1, $2)`,
 		prod.ID, root.ID)
 	require.NoError(t, err)
 
-	// 4️⃣ Call AvgPriceForCategory
 	got, err := testQueries.AvgPriceForCategory(context.Background(), root.ID)
 	require.NoError(t, err)
-	require.NotEmpty(t, got)
 
-	require.Equal(t, prod.ID, got.ID)
-	require.Equal(t, prod.Name, got.Name)
+	gotStr := fmt.Sprintf("%.2f", got)
+
+	require.Equal(t, prod.Price, gotStr)
 }

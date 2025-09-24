@@ -25,16 +25,32 @@ func NewServer(store *db.Store) *Server {
 	server := &Server{store: store}
 
 	router := gin.Default()
+for _, ri := range router.Routes() {
+    log.Printf("Route registered: %s %s", ri.Method, ri.Path)
+}
 
-	router.GET("/login", server.loginUser)
-	router.GET("/auth/callback", CallbackHandler)
+	router.GET("/auth/login", server.loginUser)
+	router.GET("/auth/callback", server.CallbackHandler)
+	router.GET("/products", server.GetProductsHandler())
+
+	secure := router.Group("/").Use(middle.AuthMiddleware(server.store))
+	
+	secure.POST("/create-product", server.CreateProductHandler())
+	secure.GET("/categories/:id/avg_price", server.AvgPriceHandler())
+	secure.POST("/orders", server.CreateOrderHandler())
+	secure.GET("/orders/:id", server.GetOrderByIDHandler())
 
 	server.router = router
 
 	return server
+	
 }
 
 func (server *Server) Start(address string) error {
+	for _, ri := range server.router.Routes() {
+		log.Println("Route:", ri.Method, ri.Path)
+	}
+
 	return server.router.Run(address)
 }
 

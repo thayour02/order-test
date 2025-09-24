@@ -1,6 +1,7 @@
 package api
 
 import (
+	
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -16,7 +17,7 @@ type CreateProductRequest struct {
 }
 
 // CreateProductHandler handles product creation
-func CreateProductHandler(store *db.Store) gin.HandlerFunc {
+func (server *Server) CreateProductHandler() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req CreateProductRequest
 		if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -24,7 +25,7 @@ func CreateProductHandler(store *db.Store) gin.HandlerFunc {
 			return
 		}
 
-		product, err := store.CreateProductWithCategories(ctx, db.ProductInput{
+		product, err := server.store.CreateProductWithCategories(ctx, db.ProductInput{
 			Name:        req.Name,
 			Description: req.Description,
 			Price:       req.Price,
@@ -40,6 +41,23 @@ func CreateProductHandler(store *db.Store) gin.HandlerFunc {
 			"name":        product.Name,
 			"description": product.Description.String,
 			"price":       product.Price,
+		})
+	}
+}
+
+
+
+// GetProductsHandler returns all products
+func (server *Server) GetProductsHandler() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		products, err := server.store.GetAllProducts(ctx)
+		if err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to fetch products: " + err.Error()})
+			return
+		}
+
+		ctx.JSON(http.StatusOK, gin.H{
+			"products": products,
 		})
 	}
 }

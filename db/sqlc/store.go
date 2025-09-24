@@ -103,11 +103,17 @@ func (store *Store) CreateOrderWithItems(ctx context.Context, customerID int64, 
 	return order, total, err
 }
 
-
-// GetCustomerByOIDCSub retrieves a customer by OIDC sub
-func (store *Store) GetCustomerByOIDCSub(ctx context.Context, oidcSub string) (GetCustomerByOIDCSubRow, error) {
-	return store.queries.GetCustomerByOIDCSub(ctx, oidcSub)
+// Store wrapper for order-related queries
+func (store *Store) GetOrderByID(ctx context.Context, orderID int64) (GetOrderByIDRow, error) {
+	return store.queries.GetOrderByID(ctx, orderID)
 }
+
+func (store *Store) GetOrdersByCustomerID(ctx context.Context, customerID int64) ([]GetOrdersByCustomerIDRow, error) {
+	return store.queries.GetOrdersByCustomerID(ctx, customerID)
+}
+
+
+
 
 // CreateCustomer wraps the sqlc-generated CreateCustomer query in a transaction
 func (store *Store) CreateCustomer(ctx context.Context, arg CreateCustomerParams) (Customer, error) {
@@ -130,7 +136,10 @@ func (store *Store) CreateCustomer(ctx context.Context, arg CreateCustomerParams
 	})
 	return customer, err
 }
-
+// GetCustomerByOIDCSub retrieves a customer by OIDC sub
+func (store *Store) GetCustomerByOIDCSub(ctx context.Context, oidcSub string) (GetCustomerByOIDCSubRow, error) {
+	return store.queries.GetCustomerByOIDCSub(ctx, oidcSub)
+}
 
 func (store *Store) CreateProductWithCategories(ctx context.Context, input ProductInput) (Product, error) {
 	var product Product
@@ -169,3 +178,16 @@ func (store *Store) GetAllProducts(ctx context.Context) ([]Product, error) {
 }
 
 
+// CreateCategory wraps sqlc CreateCategory
+func (store *Store) CreateCategory(ctx context.Context, name string, parentID sql.NullInt64) (Category, error) {
+	arg := CreateCategoryParams{
+		Name:     name,
+		ParentID: parentID,
+	}
+	return store.queries.CreateCategory(ctx, arg)
+}
+
+// AvgPriceForCategory wraps the SQL query to get the product with avg price for a category
+func (store *Store) AvgPriceForCategory(ctx context.Context, categoryID int64) (float64, error) {
+    return store.queries.AvgPriceForCategory(ctx, categoryID)
+}

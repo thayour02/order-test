@@ -11,6 +11,7 @@ import (
 )
 
 const (
+	address = ":8080"
 	dbDriver = "postgres"
 	dbSource = "postgresql://root:secret@localhost:5434/order?sslmode=disable"
 )
@@ -24,7 +25,7 @@ conn, err := sql.Open(dbDriver, dbSource)
 	store := db.NewStore(conn)
 	server := api.NewServer(store)
 
-	err = server.Start(":8080")
+	err = server.Start(address)
 	if err != nil {
 		log.Fatal("cannot start server:", err)
 	}

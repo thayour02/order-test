@@ -20,23 +20,17 @@ WITH RECURSIVE cat_tree AS (
   FROM categories c
   JOIN cat_tree ct ON c.parent_id = ct.cat_id
 )
-SELECT p.id, p.name, p.description, p.price, p.created_at
+SELECT CAST(COALESCE(AVG(p.price), 0) AS float8) AS avg_price
 FROM products p
 JOIN product_categories pc ON pc.product_id = p.id
 WHERE pc.category_id IN (SELECT cat_id FROM cat_tree)
 `
 
-func (q *Queries) AvgPriceForCategory(ctx context.Context, id int64) (Product, error) {
+func (q *Queries) AvgPriceForCategory(ctx context.Context, id int64) (float64, error) {
 	row := q.db.QueryRowContext(ctx, avgPriceForCategory, id)
-	var i Product
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Description,
-		&i.Price,
-		&i.CreatedAt,
-	)
-	return i, err
+	var avg_price float64
+	err := row.Scan(&avg_price)
+	return avg_price, err
 }
 
 const createCategory = `-- name: CreateCategory :one
