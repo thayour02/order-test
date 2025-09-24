@@ -36,6 +36,6 @@ jobs:
 
 
     - name: Run migrations
-      run: migrate -path db/migration -database "postgresql://root:secret@localhost:5432/orders?sslmode=disable" -verbose up
+      run: migrate -path db/migration -database "postgresql://root:secret@localhost:5432/order?sslmode=disable" -verbose up
     - name: Test
       run: go test -v ./...
