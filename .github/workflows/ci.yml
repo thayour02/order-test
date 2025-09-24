@@ -34,6 +34,17 @@ jobs:
       with:
         go-version: '1.20'
 
+    - name: Install migrate
+      run: |
+        version=4.15.2
+        os=$(uname | tr '[:upper:]' '[:lower:]')
+        arch=$(uname -m)
+        if [ "$arch" = "x86_64" ]; then arch="amd64"; fi
+        if [ "$arch" = "aarch64" ]; then arch="arm64"; fi
+        curl -L https://github.com/golang-migrate/migrate/releases/download/v${version}/migrate.${os}-${arch}.tar.gz \
+        | tar -xz
+        sudo mv migrate /usr/local/bin/migrate
+        migrate -version
 
     - name: Run migrations
       run: migrate -path db/migration -database "postgresql://root:secret@localhost:5432/order?sslmode=disable" -verbose up
