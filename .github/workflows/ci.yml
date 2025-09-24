@@ -45,7 +45,7 @@ jobs:
         | tar -xz
         sudo mv migrate /usr/local/bin/migrate
         migrate -version
-
+        
     - name: Run migrations
       run: migrate -path db/migration -database "postgresql://root:secret@localhost:5432/order?sslmode=disable" -verbose up
     - name: Test
