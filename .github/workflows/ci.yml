@@ -22,7 +22,7 @@ jobs:
           POSTGRES_DB: order
           POSTGRES_PASSWORD: secret
           POSTGRES_USER: root
-        ports: ["5432:5432"]
+        ports: ["5432:5434"]
         options: >-
           --health-cmd "pg_isready -U root" --health-interval 10s --health-timeout 5s --health-retries 5
 
@@ -47,6 +47,6 @@ jobs:
         migrate -version
         
     - name: Run migrations
-      run: migrate -path db/migration -database "postgresql://root:secret@localhost:5432/order?sslmode=disable" -verbose up
+      run: migrate -path db/migration -database "postgresql://root:secret@localhost:5434/order?sslmode=disable" -verbose up
     - name: Test
       run: go test -v ./...
